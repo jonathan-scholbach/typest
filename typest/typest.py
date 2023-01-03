@@ -1,10 +1,12 @@
 import os
 import sys
 
-from typy.test import Test
+from typest.test import Test
 
 
 def mypy(directory: str):
+    current_path = sys.path[0]
+    test_directory = os.path.join(current_path, "../tests")
     for dirpath, _, names in os.walk(test_directory):
         for name in names:
             if name.endswith(".py"):
@@ -14,6 +16,4 @@ def mypy(directory: str):
 
 
 if __name__ == "__main__":
-    current_path = sys.path[0]
-    test_directory = os.path.join(current_path, "../tests")
-    mypy(test_directory)
+    mypy("")
