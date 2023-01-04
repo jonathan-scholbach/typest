@@ -1,5 +1,8 @@
 # typest
 
+[![pypi](https://img.shields.io/pypi/v/typest.svg)](https://pypi.python.org/pypi/typest)
+[![versions](https://img.shields.io/pypi/pyversions/typest.svg)](https://github.com/jonathan-scholbach/typest)
+
 An experimental framework to test your library against type checkers, allowing
 to formulate type expectations and expected typechecker errors. Its purpose is
 the same as the one of
