@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from typest.test import Test as Typest
+from typest.typecheckers.mypy import Mypy
 
 
-class TestTest(TestCase):
-    def test_test(self):
-        errors = Typest("/", "tests/case.py").run()
+class TestMypy(TestCase):
+    def test_run(self):
+        errors = Mypy("/", "tests/case.py").run()
         self.assertEqual(errors, [])

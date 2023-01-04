@@ -23,8 +23,7 @@ class FakeBuiltin:
         "str",
         "tuple",
         "memoryview",
-        "None",
-        "NoneType",
+        "None", "NoneType",
     ]
 
     def __init__(self, typ: Optional["FakeType"]) -> None:
@@ -91,6 +90,8 @@ FakeType = FakeBuiltin | FakeOptional | FakeUnion | str
 def parse(text: str) -> FakeType:
     """Parse a string represenation of a type into a which are easier to
     compare. This does not check the string to be well-formatted."""
+    text = text.strip()
+
     for builtin_type in FakeBuiltin.types:
         if text == builtin_type or text == f"builtins.{builtin_type}":
             return FakeBuiltin(builtin_type)

@@ -1,5 +1,6 @@
 [tool.pyright]
 venv = ".venv"
+venvPath = "/home/jonathan/projects/typest"
 
 [tool.poetry]
 name = "typest"
@@ -14,6 +15,7 @@ repository = "https://github.com/jonathan-scholbach/typest"
 [tool.poetry.dependencies]
 python = "^3.10"
 mypy = "^0.991"
+pyright = "^1.1"
 comment-parser = "^1.2.4"
 
 [tool.poetry.group.dev.dependencies]

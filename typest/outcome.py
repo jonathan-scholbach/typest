@@ -10,7 +10,6 @@ class ParsingFailed(ValueError):
 
 
 class Outcome:
-    @classmethod
     def from_mypy_output(cls, raw: str) -> Optional["Outcome"]:
         try:
             linenumber = Outcome._linenumber_from_mypy_output(raw)
@@ -21,32 +20,10 @@ class Outcome:
     def __init__(self, linenumber) -> None:
         self.linenumber = linenumber
 
-    @staticmethod
-    def _linenumber_from_mypy_output(raw: str) -> int:
-        match = re.search(r".*\.py:(\d+):.*", raw)
-        if match is None:
-            raise ParsingFailed()
-        return int(match.group(1))
-
 
 class TypeOutcome(Outcome):
 
     comment_prefix: str = " expect-type: "
-
-    @classmethod
-    def from_mypy_output(cls, raw: str) -> Optional["TypeOutcome"]:
-        super_instance = super(TypeOutcome, cls).from_mypy_output(raw)
-        if super_instance is None:
-            return None
-
-        try:
-            revealed_type = TypeOutcome._revealed_type_from_mypy_output(raw)
-            return TypeOutcome(
-                super_instance.linenumber,
-                revealed_type,
-            )
-        except ParsingFailed:
-            return None
 
     @classmethod
     def from_comment(
@@ -65,19 +42,12 @@ class TypeOutcome(Outcome):
         self._type = typ
 
     def __repr__(self) -> str:
-        return f"TypeOutcome({self.linenumber}, {self.revealed_type})"
+        return f"TypeOutcome({self.linenumber}, {self._type})"
 
     def __eq__(self, other: "TypeOutcome") -> bool:
         if not isinstance(other, TypeOutcome):
             return False
         return self._type == other._type and self.linenumber == other.linenumber
-
-    @staticmethod
-    def _revealed_type_from_mypy_output(raw: str) -> FakeType:
-        match = re.search(r'.*\.py:\d+: note: Revealed type is "(.*)"', raw)
-        if match is None:
-            raise ParsingFailed()
-        return parse(match.group(1))
 
     @classmethod
     def _type_from_comment(cls, comment: str) -> FakeType:
@@ -90,25 +60,6 @@ class TypeOutcome(Outcome):
 class ErrorOutcome(Outcome):
 
     comment_prefix: str = "expect-error:"
-
-    @classmethod
-    def from_mypy_output(cls, raw: str) -> Optional["ErrorOutcome"]:
-        super_instance = super(ErrorOutcome, cls).from_mypy_output(raw)
-        if super_instance is None:
-            return None
-
-        try:
-            error = cls._error_from_mypy_output(raw)
-        except ParsingFailed:
-            return None
-        return cls(super_instance.linenumber, error)
-
-    @staticmethod
-    def _error_from_mypy_output(raw: str) -> str:
-        match = re.search(r".*\.py:\d+: error: (.*)", raw)
-        if match is None:
-            raise ParsingFailed()
-        return match.group(1)
 
     @classmethod
     def from_comment(
