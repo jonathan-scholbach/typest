@@ -1,4 +1,4 @@
-from typest.outcome import ErrorOutcome, TypeOutcome, Outcome
+from typest.outcomes import Flaw, RevealedType, Outcome
 from typest.utils.color import Color
 
 
@@ -26,7 +26,7 @@ class Error:
     def __str__(self) -> str:
         msg = f"=== LINE {self.linenumber} ===\n"
 
-        if isinstance(self.expected, TypeOutcome):
+        if isinstance(self.expected, RevealedType):
             msg += (
                 self._pad("Expected type")
                 + Color.ALERT.value
@@ -34,7 +34,7 @@ class Error:
                 + Color.RESET.value
                 + "\n"
             )
-            if isinstance(self.actual, TypeOutcome):
+            if isinstance(self.actual, RevealedType):
                 msg += (
                     self._pad("Found type")
                     + Color.OK.value
@@ -48,7 +48,7 @@ class Error:
                     "\n"
                 )
 
-        if isinstance(self.expected, ErrorOutcome):
+        if isinstance(self.expected, Flaw):
             if self.expected.error is None:
                 msg += "Expected error.\n"
             else:
@@ -59,7 +59,7 @@ class Error:
                     + Color.RESET.value
                     + "\n"
                 )
-            if isinstance(self.actual, ErrorOutcome):
+            if isinstance(self.actual, Flaw):
                 msg += (
                     self._pad("Found error")
                     + Color.OK.value
