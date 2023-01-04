@@ -6,7 +6,9 @@ from comment_parser import comment_parser
 
 from typest.error import Error
 from typest.outcomes import Flaw, Outcome, RevealedType
+from typest.outcomes.mismatch import Mismatch
 from typest.utils.color import Color
+from typest.utils.fake_type import FakeType
 
 
 class NoTestFound(Exception):
@@ -42,15 +44,19 @@ class TypeChecker(ABC):
         """Extract unspecific error from line of typechecker's output"""
         pass
 
+    @abstractstaticmethod
+    def _extract_mismatch(line: str, linenumber: int) -> Mismatch | None:
+        """Extract type mismatch error from line of typechecker's output"""
+        pass
+
     def _expected_outcomes(self) -> list[Outcome]:
         expected: list[Outcome] = []
         for comment in comment_parser.extract_comments(self.path):
             text = comment.text()
             linenumber = comment.line_number()
-            expectation = (
-                RevealedType.from_comment(linenumber, text)
-                or Flaw.from_comment(linenumber, text)
-            )
+            expectation = RevealedType.from_comment(
+                linenumber, text
+            ) or Flaw.from_comment(linenumber, text)
             if expectation is not None:
                 expected.append(expectation)
         return expected
@@ -67,6 +73,10 @@ class TypeChecker(ABC):
             flaw = self._extract_flaw(line, linenumber)
             if flaw is not None:
                 actual.append(flaw)
+
+            mismatch = self._extract_mismatch(line, linenumber)
+            if mismatch is not None:
+                actual.append(mismatch)
 
             revealed_type = self._extract_type(line, linenumber)
             if revealed_type is not None:
