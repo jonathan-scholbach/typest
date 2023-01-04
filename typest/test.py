@@ -45,13 +45,13 @@ class Test:
 
     def run(self) -> list[Error]:
         """Raises NoTestFound if no tests are defined in this testfile"""
+        expected_outcomes = self._expected_outcomes()
+        if not expected_outcomes:
+            raise NoTestFound()
 
         print(self.rel_path, end=" ")
 
         errors: list[Error] = []
-        expected_outcomes = self._expected_outcomes()
-        if not expected_outcomes:
-            raise NoTestFound()
 
         for expected in expected_outcomes:
             has_match = False
@@ -75,5 +75,5 @@ class Test:
             else:
                 if not has_match:
                     errors.append(Error(self.rel_path, expected, None))
-        print("\n")
+        print("", end="\r")
         return errors

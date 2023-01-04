@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from typy.utils.fake_type import parse, FakeBuiltin, FakeOptional, FakeUnion
+from typest.utils.fake_type import parse, FakeBuiltin, FakeOptional, FakeUnion
 
 
 class TestParse(TestCase):
