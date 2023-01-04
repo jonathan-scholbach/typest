@@ -4,9 +4,9 @@ from subprocess import Popen, PIPE
 
 from comment_parser import comment_parser
 
-from typy.error import Error
-from typy.outcome import ErrorOutcome, Outcome, TypeOutcome
-from typy.utils.color import Color
+from typest.error import Error
+from typest.outcome import ErrorOutcome, Outcome, TypeOutcome
+from typest.utils.color import Color
 
 
 class NoTestFound(Exception):

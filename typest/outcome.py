@@ -1,8 +1,8 @@
 import re
 from typing import Optional
 
-from typy.utils.fake_type import parse
-from typy.utils.fake_type import FakeType
+from typest.utils.fake_type import parse
+from typest.utils.fake_type import FakeType
 
 
 class ParsingFailed(ValueError):

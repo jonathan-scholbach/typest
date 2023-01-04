@@ -1,5 +1,5 @@
-from typy.outcome import ErrorOutcome, TypeOutcome, Outcome
-from typy.utils.color import Color
+from typest.outcome import ErrorOutcome, TypeOutcome, Outcome
+from typest.utils.color import Color
 
 
 class Error:
@@ -30,7 +30,7 @@ class Error:
             msg += (
                 self._pad("Expected type")
                 + Color.ALERT.value
-                + self.expected.revealed_type
+                + str(self.expected._type)
                 + Color.RESET.value
                 + "\n"
             )
@@ -38,7 +38,7 @@ class Error:
                 msg += (
                     self._pad("Found type")
                     + Color.OK.value
-                    + self.actual.revealed_type
+                    + str(self.actual._type)
                     + Color.RESET.value
                     + "\n"
                 )
