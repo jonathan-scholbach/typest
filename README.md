@@ -45,9 +45,19 @@ number: int = string  # expect-error: Incompatible types in assignment (expressi
 
 ## Use
 
-    python -m typest [PATH]
+    python -m typest [PATH] [TYPECHECKERS]
 
 If PATH is a directory, all python files under that directory (including
 subdirectories) are going to be checked. If PATH points to a file, it has to be
-a python file. If PATH is not provided, the directory from where the script is
-called is being used.
+a python file. 
+
+TYPECHECKERS is an optional argument, a comma separated list of names of
+typecheckers you want to run your tests against. Currently, `mypy` and `pyright`
+are suppported.
+
+
+## Development
+
+You can add more typecheckers by subclassing
+`typest.typecheckers.base.TypeChecker` and importing your new class in
+`typest/typecheckers/__init__.py`.
