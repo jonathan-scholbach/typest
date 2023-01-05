@@ -17,3 +17,6 @@ class Flaw(Outcome):
             return False
 
         return self.linenumber == other.linenumber
+
+    def __repr__(self) -> str:
+        return f"Flaw({self.linenumber})"

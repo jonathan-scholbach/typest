@@ -1,6 +1,7 @@
 .PHONY: build test lint run
 
 build:
+	poetry install
 	poetry build
 
 lint:

@@ -23,7 +23,8 @@ class FakeBuiltin:
         "str",
         "tuple",
         "memoryview",
-        "None", "NoneType",
+        "None",
+        "NoneType",
     ]
 
     def __init__(self, typ: Optional["FakeType"]) -> None:
