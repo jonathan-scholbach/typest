@@ -12,4 +12,4 @@ test: build
 	poetry run python -m pytest tests
 
 run: build
-	poetry run python -m typest tests/
+	poetry run python -m typest tests/cases
