@@ -52,7 +52,7 @@ def _run_dir(
 
     test_directory = os.path.join(execution_path, dir_path)
     for typechecker in typecheckers:
-        print(f"Running tests against {typechecker.name} typechecker")
+        print(f"Running tests against {typechecker.name}")
         for dirpath, _, names in os.walk(test_directory):
             for name in names:
                 if name.endswith(".py"):
@@ -75,6 +75,7 @@ parser.add_argument(
 
 parser.add_argument(
     "typechecker",
+    nargs="?",
     action="store",
     default=None,
 )
