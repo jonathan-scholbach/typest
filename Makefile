@@ -1,4 +1,5 @@
-.PHONY: build test lint run
+.PHONY: build test lint run publish
+
 
 build:
 	poetry install
@@ -13,3 +14,6 @@ test: build
 
 run: build
 	poetry run python -m typest tests/cases
+
+publish: test
+	poetry publish
