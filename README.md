@@ -29,11 +29,12 @@ number: int = string  # expect-error
 ```
 
 
-You can also specify which error you expect:
+You can also specify to expect a mismatch error, i.e. an error where an assigned
+type is mismatching the actual type:
 
 ```Python
 string: str = "not a number"
-number: int = string  # expect-error: Incompatible types in assignment (expression has type "int", variable has type "str")  [assignment]
+number: int = string  # expect-mismatch: int <> str
 ```
 
 ## Installation
