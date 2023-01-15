@@ -43,6 +43,18 @@ def _run_file(
         return True
 
 
+def _run_file_typecheckers(
+    typecheckers: list[Type[TypeChecker]], execution_path: str, filepath: str
+) -> bool:
+    flawless = True
+    for typechecker in typecheckers:
+        print(f"Running tests against {typechecker.name}")
+        if not _run_file(typechecker, execution_path, filepath):
+            flawless = False
+        print("\n")
+    return flawless
+
+
 def _run_dir(
     typecheckers: list[Type[TypeChecker]],
     execution_path: str,
@@ -51,15 +63,12 @@ def _run_dir(
     flawless = True
 
     test_directory = os.path.join(execution_path, dir_path)
-    for typechecker in typecheckers:
-        print(f"Running tests against {typechecker.name}")
-        for dirpath, _, names in os.walk(test_directory):
-            for name in names:
-                if name.endswith(".py"):
-                    filepath = os.path.join(dirpath, name)
-                    if not _run_file(typechecker, execution_path, filepath):
-                        flawless = False
-        print("\n")
+    for dirpath, _, names in os.walk(test_directory):
+        for name in names:
+            if name.endswith(".py"):
+                filepath = os.path.join(dirpath, name)
+                if not _run_file_typecheckers(typecheckers, execution_path, filepath):
+                    flawless = False
     return flawless
 
 
@@ -98,7 +107,7 @@ if __name__ == "__main__":
         if not target_path.endswith(".py"):
             print("file path must be a python file")
         else:
-            flawless = _run_file(typecheckers, execution_path, target_path)
+            flawless = _run_file_typecheckers(typecheckers, execution_path, target_path)
     else:
         flawless = _run_dir(typecheckers, execution_path, target_path)
 
