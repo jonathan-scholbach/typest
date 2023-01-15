@@ -12,7 +12,7 @@ class Mypy(TypeChecker):
     name = "mypy"
 
     def command(self) -> list[str]:
-        return ["mypy", self.path]
+        return ["mypy", str(self.path)]
 
     @staticmethod
     def _extract_linenumber(line: str) -> int | None:

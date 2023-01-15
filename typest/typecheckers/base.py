@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC, abstractstaticmethod
+from pathlib import Path
 
 from subprocess import Popen, PIPE
 
@@ -20,9 +21,8 @@ class TypeChecker(ABC):
 
     name: str
 
-    def __init__(self, rel_path, abs_path: str) -> None:
-        self.path = abs_path
-        self.rel_path = rel_path
+    def __init__(self, path: Path) -> None:
+        self.path = path
 
     @abstractmethod
     def command(self) -> list[str]:
@@ -90,7 +90,7 @@ class TypeChecker(ABC):
         if not expected_outcomes:
             raise NoTestFound()
 
-        print(self.rel_path, end=" ")
+        print(self.path, end=" ")
 
         errors: list[Error] = []
         for expected in expected_outcomes:
@@ -106,7 +106,7 @@ class TypeChecker(ABC):
                 print(Color.ALERT.value + "F" + Color.RESET.value, end="")
                 errors.append(
                     Error(
-                        self.rel_path,
+                        self.path,
                         expected,
                         actual,
                     )
@@ -114,6 +114,6 @@ class TypeChecker(ABC):
 
             else:
                 if not has_match:
-                    errors.append(Error(self.rel_path, expected, None))
+                    errors.append(Error(self.path, expected, None))
         print("", end="\r")
         return errors
