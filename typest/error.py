@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from typest.outcomes import Flaw, RevealedType, Outcome
 from typest.utils.color import Color
 
@@ -7,11 +9,11 @@ class Error:
 
     def __init__(
         self,
-        filename: str,
+        path: Path,
         expected: Outcome,
         actual: Outcome | None,
     ):
-        self.filename = filename
+        self.path = path
         self.linenumber = expected.linenumber
         self.expected = expected
         self.actual = actual
@@ -21,7 +23,7 @@ class Error:
         return string.ljust(20)
 
     def __repr__(self) -> str:
-        return f"Error({self.filename}, {self.expected}, {self.actual})"
+        return f"Error({self.path}, {self.expected}, {self.actual})"
 
     def __str__(self) -> str:
         msg = f"=== LINE {self.linenumber} ===\n"

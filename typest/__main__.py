@@ -1,7 +1,7 @@
 import argparse
-import os
 import sys
 from typing import Type
+from pathlib import Path
 
 from comment_parser import comment_parser
 
@@ -10,16 +10,17 @@ from typest.typecheckers import TypeChecker
 from typest.utils.color import Color
 
 
-def _run_file(
-    typechecker: Type[TypeChecker], execution_path: str, filepath: str
-) -> bool:
-    rel_path = os.path.relpath(filepath, execution_path)
+def _run_file(typechecker: Type[TypeChecker], path: Path) -> bool:
+    # Use relative paths when possible, only for visualization's sake
+    if path.is_relative_to(Path.cwd()):
+        path = path.relative_to(Path.cwd())
+
     try:
-        errors = typechecker(rel_path, filepath).run()
+        errors = typechecker(path).run()
     except NoTestFound:
         print(
             Color.WARN.value
-            + f"{rel_path} "
+            + f"{path} "
             + Color.RESET.value
             + f"no tests found"
         )
@@ -28,38 +29,39 @@ def _run_file(
     except comment_parser.UnsupportedError:
         print(
             Color.WARN.value
-            + f"{rel_path} "
+            + f"{path} "
             + Color.RESET.value
             + f"file format not supported or file empty"
         )
         return True
     if errors:
-        print(f"{Color.ALERT.value}{rel_path} {Color.RESET.value}")
+        print(f"{Color.ALERT.value}{path} {Color.RESET.value}")
         for error in errors:
             print(error)
         return False
     else:
-        print(f"{Color.OK.value}{rel_path} {Color.RESET.value}")
+        print(f"{Color.OK.value}{path} {Color.RESET.value}")
         return True
 
 
-def _run_dir(
-    typecheckers: list[Type[TypeChecker]],
-    execution_path: str,
-    dir_path: str,
+def _run_file_typecheckers(
+    typecheckers: list[Type[TypeChecker]], path: Path
 ) -> bool:
     flawless = True
-
-    test_directory = os.path.join(execution_path, dir_path)
     for typechecker in typecheckers:
         print(f"Running tests against {typechecker.name}")
-        for dirpath, _, names in os.walk(test_directory):
-            for name in names:
-                if name.endswith(".py"):
-                    filepath = os.path.join(dirpath, name)
-                    if not _run_file(typechecker, execution_path, filepath):
-                        flawless = False
+        if not _run_file(typechecker, path):
+            flawless = False
         print("\n")
+    return flawless
+
+
+def _run_dir(typecheckers: list[Type[TypeChecker]], path: Path) -> bool:
+    flawless = True
+
+    for file in path.rglob("*.py"):
+        if not _run_file_typecheckers(typecheckers, file):
+            flawless = False
     return flawless
 
 
@@ -70,7 +72,9 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument(
     "path",
-    default=None,
+    nargs="?",
+    default=Path.cwd(),
+    type=Path,
 )
 
 parser.add_argument(
@@ -82,7 +86,6 @@ parser.add_argument(
 
 if __name__ == "__main__":
     typecheckers = TypeChecker.__subclasses__()
-    execution_path = sys.path[0]
     args = parser.parse_args()
     if args.typechecker is not None:
         names = args.typechecker.split(",")
@@ -92,15 +95,15 @@ if __name__ == "__main__":
             if typechecker.name in names
         ]
 
-    target_path = args.path or execution_path
+    target_path: Path = args.path
     flawless = True
-    if os.path.isfile(target_path):
-        if not target_path.endswith(".py"):
+    if target_path.is_file():
+        if target_path.suffix != ".py":
             print("file path must be a python file")
         else:
-            flawless = _run_file(typecheckers, execution_path, target_path)
+            flawless = _run_file_typecheckers(typecheckers, target_path)
     else:
-        flawless = _run_dir(typecheckers, execution_path, target_path)
+        flawless = _run_dir(typecheckers, target_path)
 
     if not flawless:
         sys.exit(1)

@@ -11,7 +11,7 @@ class Pyright(TypeChecker):
     name = "pyright"
 
     def command(self) -> list[str]:
-        return ["pyright", self.path]
+        return ["pyright", str(self.path)]
 
     @staticmethod
     def _extract_linenumber(line: str) -> int | None:
