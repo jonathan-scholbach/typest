@@ -89,8 +89,8 @@ FakeType = FakeBuiltin | FakeOptional | FakeUnion | str
 
 
 def parse(text: str) -> FakeType:
-    """Parse a string represenation of a type into a which are easier to
-    compare. This does not check the string to be well-formatted."""
+    """Parse a string representation of a type into a FakeType for ease of
+    comparison. This does not check the string to be well-formatted."""
     text = text.strip()
 
     for builtin_type in FakeBuiltin.types:
