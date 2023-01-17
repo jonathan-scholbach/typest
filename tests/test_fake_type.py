@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from typest.utils.fake_type import (
+    FakeGeneric,
     parse,
     parse_arg_list,
     FakeBuiltin,
@@ -41,20 +42,29 @@ class TestParse(TestCase):
             FakeUnion(FakeBuiltin("None"), FakeBuiltin("int")),
         )
 
+    def test_simple_generic(self):
+        generic = parse("SomeGeneric[int]")
+        self.assertEqual(generic, FakeGeneric("SomeGeneric", FakeBuiltin("int")))
+
+    def test_nested_generic(self):
+        generic = parse("SomeGeneric[Union[int, str]]")
+        self.assertEqual(
+            generic, FakeGeneric("SomeGeneric", FakeUnion(FakeBuiltin("int"), FakeBuiltin("str")))
+        )
+
+
 class TestParseArgList(TestCase):
     def test_flat_list(self):
         text = "str, int, float"
         self.assertEqual(
             parse_arg_list(text),
-            [FakeBuiltin("str"), FakeBuiltin("int"), FakeBuiltin("float")],
+            (FakeBuiltin("str"), FakeBuiltin("int"), FakeBuiltin("float")),
         )
 
     def test_nested_list(self):
         text = "Union[str, int], str"
-        self.assertEqual(
-            parse_arg_list(text),
-            [FakeUnion("str", "int"), FakeBuiltin("str")]
-        )
+        self.assertEqual(parse_arg_list(text), (FakeUnion("str", "int"), FakeBuiltin("str")))
+
 
 class TestEquality(TestCase):
     def test_builtins(self):
