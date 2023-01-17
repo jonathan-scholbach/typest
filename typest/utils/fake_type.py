@@ -116,3 +116,24 @@ def parse(text: str) -> FakeType:
         )
 
     return text
+
+
+def parse_arg_list(text: str) -> list["FakeType"]:
+    split_indices: list[int | None] = [0]
+    open_brackets = 0
+    for index, char in enumerate(text):
+        if char == "[":
+            open_brackets += 1
+            continue
+        if char == "]":
+            open_brackets -= 1
+            continue
+        if char == "," and not open_brackets:
+            split_indices.append(index)
+    split_indices.append(None)
+    parts = [
+        text[split_indices[i]:split_indices[i+1]].strip(",")
+        for i in range(len(split_indices)-1)
+    ]
+
+    return [parse(part) for part in parts]
