@@ -5,7 +5,6 @@ from typest.utils.fake_type import (
     parse,
     parse_arg_list,
     FakeBuiltin,
-    FakeOptional,
     FakeUnion,
 )
 
@@ -21,11 +20,11 @@ class TestParse(TestCase):
 
     def test_traditional_optional(self):
         optional = parse("Optional[SomeType]")
-        self.assertEqual(optional, FakeOptional("SomeType"))
+        self.assertEqual(optional, FakeUnion("SomeType", "None"))
 
     def test_optional_builtin(self):
         optional = parse("Optional[bool]")
-        self.assertEqual(optional, FakeOptional(FakeBuiltin("bool")))
+        self.assertEqual(optional, FakeUnion(FakeBuiltin("bool"), "None"))
 
     def test_union(self):
         union = parse("Union[SomeType, OtherType]")
@@ -86,9 +85,3 @@ class TestEquality(TestCase):
         once = FakeUnion("SomeType")
         twice = FakeUnion("SomeType", "SomeType")
         self.assertEqual(once, twice)
-
-    def test_optional_equals_union_with_none(self):
-        optional = FakeOptional("SomeType")
-        union = FakeUnion("SomeType", "None")
-        self.assertEqual(optional, union)
-        self.assertEqual(union, optional)

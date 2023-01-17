@@ -34,8 +34,8 @@ class FakeBuiltin:
         if not isinstance(other, FakeBuiltin):
             return False
 
-        if self._type in ["None", "NoneType"]:
-            return other._type in ["None", "NoneType"]
+        if self._type in ["None", "NoneType", None]:
+            return other._type in ["None", "NoneType", None]
         return self._type == other._type
 
     def __hash__(self) -> int:
@@ -59,25 +59,6 @@ class FakeGeneric:
         return f"{self._name}[{self._types}]"
 
 
-class FakeOptional:
-    def __init__(self, typ: Optional["FakeType"]) -> None:
-        self._type = typ
-
-    def __eq__(self, other: "FakeType") -> bool:
-        if isinstance(other, FakeUnion):
-            return other.__eq__(self)
-
-        if not isinstance(other, FakeOptional):
-            return False
-        return self._type == other._type
-
-    def __hash__(self) -> int:
-        return hash(self._type)
-
-    def __repr__(self) -> str:
-        return f"Optional[{self._type}]"
-
-
 class FakeUnion:
     def __init__(self, *types: "FakeType") -> None:
         self._types = tuple(
@@ -85,8 +66,6 @@ class FakeUnion:
         )
 
     def __eq__(self, other: "FakeType") -> bool:
-        if isinstance(other, FakeOptional):
-            return self == FakeUnion(other._type, FakeBuiltin(None))
         if not isinstance(other, FakeUnion):
             return False
         return set(self._types) == set(other._types)
@@ -99,7 +78,7 @@ class FakeUnion:
         return f"Union[{inner}]"
 
 
-FakeType = FakeBuiltin | FakeOptional | FakeUnion | FakeGeneric | str
+FakeType = FakeBuiltin | FakeUnion | FakeGeneric | str
 
 
 def parse_arg_list(text: str) -> tuple["FakeType"]:
@@ -156,7 +135,7 @@ def parse(text: str) -> FakeType:
     tail = text[index + 1 : -1]
     match name:
         case "Optional":
-            return FakeOptional(parse(tail))
+            return FakeUnion(FakeBuiltin("None"), parse(tail))
         case "Union":
             return FakeUnion(*parse_arg_list(tail))
         case _:
