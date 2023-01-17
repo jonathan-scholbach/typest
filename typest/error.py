@@ -51,25 +51,8 @@ class Error:
                 )
 
         if isinstance(self.expected, Flaw):
-            if self.expected.error is None:
-                msg += "Expected error.\n"
-            else:
-                msg += (
-                    self._pad("Expected error")
-                    + Color.ALERT.value
-                    + self.expected.error
-                    + Color.RESET.value
-                    + "\n"
-                )
+            msg += "Expected error.\n"
             if isinstance(self.actual, Flaw):
-                msg += (
-                    self._pad("Found error")
-                    + Color.OK.value
-                    + self.actual.error
-                    + Color.RESET.value
-                    + "\n"
-                )
-            else:
-                msg += f"No error found."
+                msg += f"No error found.\n"
 
         return msg
